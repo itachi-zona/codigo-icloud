@@ -1,7 +1,9 @@
 {
   "name": "itachi-icloud-backend",
   "version": "1.0.0",
-  "description": "Backend IMAP iCloud para Vercel",
+  "scripts": {
+    "build": "echo ok"
+  },
   "dependencies": {
     "imap": "^0.8.19",
     "mailparser": "^3.6.5"
