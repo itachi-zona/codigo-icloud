@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Itachi Zone — Tu código al instante</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#08020e;
+  --bdr:rgba(229,9,20,0.18);
+  --bdr2:rgba(229,9,20,0.38);
+  --text:#f0e0e0;
+  --t2:#a08080;
+  --mut:#502040;
+  --red:#E50914;
+  --red2:#ff3b3b;
+  --red3:#ff6b6b;
+  --blue:#1a6fff;
+  --blue2:#4d9fff;
+  --green:#00e5a0;
+  --db:rgba(26,111,255,0.28);
+  --shadow:0 30px 80px rgba(0,0,0,0.7);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+
+#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.neb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0;}
+.nb1{width:900px;height:700px;top:-300px;left:-200px;background:radial-gradient(ellipse,rgba(220,20,130,.22),transparent 70%);animation:nf 22s ease-in-out infinite;}
+.nb2{width:800px;height:600px;bottom:-200px;right:-150px;background:radial-gradient(ellipse,rgba(200,20,120,.18),transparent 70%);animation:nf 28s ease-in-out infinite reverse;}
+.nb3{width:500px;height:400px;top:20%;left:50%;background:radial-gradient(ellipse,rgba(180,15,100,.12),transparent 70%);animation:nf 18s ease-in-out infinite 9s;}
+@keyframes nf{0%,100%{transform:translate(0,0)scale(1)}33%{transform:translate(30px,-40px)scale(1.08)}66%{transform:translate(-20px,22px)scale(.93)}}
+
+/* BANNER */
+.banner-wrap{position:relative;width:100%;line-height:0;z-index:1;}
+.banner-img{
+  width:100%;
+  height:340px;
+  object-fit:cover;
+  object-position:center;
+  display:block;
+}
+.banner-title{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);text-align:center;white-space:nowrap;z-index:3;}
+.banner-title h1{font-family:'Cinzel',serif;font-size:clamp(22px,5vw,42px);font-weight:900;letter-spacing:4px;background:linear-gradient(135deg,#fff 0%,#ffc0e8 40%,#e91e8c 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 30px rgba(233,30,140,0.5));}
+.banner-title p{font-size:12px;color:var(--t2);font-weight:600;letter-spacing:3px;text-transform:uppercase;margin-top:4px;}
+#embers{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:2;}
+.ember{position:absolute;border-radius:50%;background:radial-gradient(circle,#ff2daa,#e91e8c,transparent);animation:embRise linear infinite;}
+@keyframes embRise{0%{opacity:0;transform:translateY(0)scale(0)}10%{opacity:.9;transform:translateY(-10px)scale(1)}90%{opacity:.2;transform:translateY(-150px)scale(.3)}100%{opacity:0;transform:translateY(-170px)scale(0)}}
+.banner-logo{
+  width:min(420px, 80vw);
+  max-height:220px;
+  object-fit:contain;
+  display:block;
+  margin:0 auto;
+  filter:drop-shadow(0 0 25px rgba(180, 0, 255, 0.55));
+}
+  
+/* LAYOUT */
+.wrapper{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;padding:0 20px 60px;}
+
+/* PILLS */
+.pills{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin:20px 0 16px;animation:su .8s cubic-bezier(.22,1,.36,1) both;}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:7px 18px;background:rgba(20,5,18,.8);border:1px solid var(--bdr2);border-radius:30px;font-size:11px;font-weight:600;color:var(--t2);backdrop-filter:blur(12px);}
+.pill-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:blink 2.2s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+/* STEPS */
+.steps-wrap{display:flex;align-items:center;gap:6px;margin-bottom:20px;animation:su .9s .1s cubic-bezier(.22,1,.36,1) both;}
+.step-item{display:flex;align-items:center;gap:8px;}
+.step-num{width:32px;height:32px;border-radius:50%;background:rgba(20,5,18,.8);border:1.5px solid var(--bdr2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--mut);transition:all .4s;}
+.step-num.active{background:rgba(233,30,140,.15);border-color:var(--red2);color:var(--red3);box-shadow:0 0 16px rgba(233,30,140,.5);}
+.step-num.done{background:var(--green);border-color:var(--green);color:#fff;box-shadow:0 0 14px rgba(0,229,160,.5);}
+.step-label{font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:1px;transition:color .3s;}
+.step-label.active{color:var(--red3);}
+.step-connector{width:44px;height:1px;background:var(--bdr);}
+
+/* CARD */
+.card-wrap{width:100%;max-width:520px;position:relative;animation:su 1s .2s cubic-bezier(.22,1,.36,1) both;}
+#border-cvs{position:absolute;top:-2px;left:-2px;width:calc(100% + 4px);height:calc(100% + 4px);border-radius:26px;pointer-events:none;z-index:0;}
+.card{position:relative;z-index:2;background:linear-gradient(150deg,rgba(16,4,22,.97),rgba(10,3,16,.99));border:1px solid var(--bdr2);border-radius:24px;padding:36px 34px;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.02) inset,var(--shadow),0 0 60px rgba(180,10,10,.1);}
+.card::after{content:'';position:absolute;top:0;left:15%;right:15%;height:1px;background:linear-gradient(90deg,transparent,rgba(233,30,140,.8),rgba(255,100,100,.4),transparent);}
+.cc{position:absolute;pointer-events:none;}
+.cc.tl{top:0;left:0;width:120px;height:120px;background:radial-gradient(circle at 0 0,rgba(233,30,140,.07),transparent 70%);}
+.cc.tr{top:0;right:0;width:120px;height:120px;background:radial-gradient(circle at 100% 0,rgba(233,30,140,.05),transparent 70%);}
+.cig{position:absolute;inset:0;border-radius:24px;pointer-events:none;background:radial-gradient(ellipse 70% 25% at 50% 0%,rgba(233,30,140,.06),transparent);transition:background .5s;}
+body.svc-disney .cig{background:radial-gradient(ellipse 70% 25% at 50% 0%,rgba(26,111,255,.07),transparent);}
+
+/* SECTION HEADER */
+.section-title{display:flex;align-items:center;gap:12px;margin-bottom:22px;}
+.section-icon{width:42px;height:42px;border-radius:12px;background:rgba(233,30,140,.1);border:1px solid rgba(233,30,140,.3);display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 0 12px rgba(233,30,140,.15);transition:all .4s;}
+body.svc-disney .section-icon{background:rgba(26,111,255,.1);border-color:rgba(26,111,255,.3);box-shadow:0 0 12px rgba(26,111,255,.15);}
+.section-text h3{font-family:'Outfit',sans-serif;font-size:16px;font-weight:800;color:var(--text);}
+.section-text p{font-size:12px;color:var(--mut);font-weight:500;margin-top:2px;}
+
+/* SERVICIOS */
+.services-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.service-card{position:relative;padding:22px 14px 20px;border-radius:18px;border:1.5px solid var(--bdr);background:linear-gradient(160deg,rgba(20,8,28,.9),rgba(12,5,18,.95));cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:11px;text-align:center;overflow:hidden;user-select:none;transition:all .3s cubic-bezier(.34,1.56,.64,1);}
+.service-card::before{content:'';position:absolute;inset:0;border-radius:16px;opacity:0;transition:opacity .35s;}
+.service-card:hover{transform:translateY(-5px) scale(1.03);}
+.service-logo{width:62px;height:62px;border-radius:18px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;transition:transform .3s;}
+.service-card:hover .service-logo{transform:scale(1.1) rotate(-3deg);}
+.service-logo::after{content:'';position:absolute;top:-60%;left:-60%;width:40%;height:200%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);transform:rotate(20deg);transition:left .6s;}
+.service-card:hover .service-logo::after{left:160%;}
+.netflix-card::before{background:radial-gradient(ellipse at 50% 0%,rgba(233,30,140,.18),transparent 65%);}
+.netflix-card:hover,.netflix-card.selected{border-color:#e91e8c;box-shadow:0 10px 45px rgba(233,30,140,.35),0 0 0 1px rgba(233,30,140,.1) inset;}
+.netflix-card.selected{transform:translateY(-5px) scale(1.03);}
+.netflix-card.selected::before{opacity:1;}
+.netflix-logo{background:linear-gradient(145deg,#e91e8c,#8b0060);box-shadow:0 10px 30px rgba(233,30,140,.6);}
+.disney-card::before{background:radial-gradient(ellipse at 50% 0%,rgba(26,111,255,.16),transparent 65%);}
+.disney-card:hover,.disney-card.selected{border-color:var(--blue);box-shadow:0 10px 45px var(--db),0 0 0 1px rgba(26,111,255,.1) inset;}
+.disney-card.selected{transform:translateY(-5px) scale(1.03);}
+.disney-card.selected::before{opacity:1;}
+.disney-logo{background:linear-gradient(145deg,#1e5bd4,#0a1f80);box-shadow:0 10px 30px rgba(30,91,212,.6);}
+.service-info h4{font-family:'Outfit',sans-serif;font-size:14px;font-weight:800;color:var(--text);}
+.service-info p{font-size:10px;color:var(--mut);font-weight:500;margin-top:2px;}
+.service-badge{position:absolute;top:10px;right:10px;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:800;transform:scale(0) rotate(-90deg);transition:all .35s cubic-bezier(.34,1.56,.64,1);}
+.netflix-card.selected .service-badge{background:#e91e8c;transform:scale(1) rotate(0);box-shadow:0 0 14px #e91e8c;}
+.disney-card.selected  .service-badge{background:var(--blue);transform:scale(1) rotate(0);box-shadow:0 0 14px var(--blue);}
+.tag-popular{position:absolute;top:0;left:50%;transform:translateX(-50%);background:linear-gradient(90deg,#8b0050,#e91e8c);color:#ffc0e8;font-size:8px;font-weight:800;padding:3px 10px;border-radius:0 0 9px 9px;letter-spacing:1.5px;text-transform:uppercase;box-shadow:0 2px 8px rgba(233,30,140,.4);}
+
+/* NETFLIX SUBTIPO */
+.netflix-subtype{margin-top:16px;max-height:0;overflow:hidden;opacity:0;transform:translateY(8px);transition:max-height .45s ease,opacity .4s ease,transform .4s ease;}
+.netflix-subtype.show{max-height:260px;opacity:1;transform:translateY(0);}
+.subtype-label{font-size:10px;font-weight:700;color:var(--red3);letter-spacing:2px;text-transform:uppercase;text-align:center;margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:8px;}
+.subtype-label::before{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(233,30,140,.4));}
+.subtype-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(233,30,140,.4),transparent);}
+.subtype-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.subtype-grid-3{grid-template-columns:1fr 1fr 1fr;}
+@media(max-width:400px){.subtype-grid-3{grid-template-columns:1fr 1fr;}}
+.subtype-btn{padding:16px 10px;border-radius:16px;border:1.5px solid rgba(233,30,140,.2);background:rgba(233,30,140,.04);cursor:pointer;text-align:center;user-select:none;transition:all .3s cubic-bezier(.34,1.56,.64,1);}
+.subtype-btn:hover{border-color:#e91e8c;background:rgba(233,30,140,.09);transform:translateY(-3px);box-shadow:0 9px 28px rgba(233,30,140,.3);}
+.subtype-btn.selected{border-color:#e91e8c;background:rgba(233,30,140,.1);transform:translateY(-3px);box-shadow:0 9px 28px rgba(233,30,140,.3);}
+.subtype-icon{font-size:26px;margin-bottom:7px;display:block;}
+.subtype-name{font-family:'Outfit',sans-serif;font-size:12px;font-weight:800;color:var(--text);}
+.subtype-desc{font-size:10px;color:var(--mut);font-weight:500;margin-top:3px;}
+
+/* DIVIDER */
+.fancy-divider{display:flex;align-items:center;gap:12px;margin:22px 0 18px;opacity:0;transform:translateY(6px);transition:all .5s ease;}
+.fancy-divider.show{opacity:1;transform:translateY(0);}
+.divider-line{flex:1;height:1px;background:var(--bdr);}
+.divider-chip{padding:5px 14px;background:rgba(233,30,140,.07);border:1px solid rgba(233,30,140,.22);border-radius:30px;font-size:10px;font-weight:700;color:var(--red3);letter-spacing:1.5px;text-transform:uppercase;white-space:nowrap;}
+body.svc-disney .divider-chip{background:rgba(26,111,255,.07);border-color:rgba(26,111,255,.22);color:var(--blue2);}
+
+/* FORM FIELDS */
+.form-field{margin-bottom:16px;opacity:0;transform:translateY(12px);transition:all .5s ease;}
+.form-field.show{opacity:1;transform:translateY(0);}
+.field-label{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;}
+.input-wrapper{position:relative;}
+.input-prefix{position:absolute;left:18px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none;color:var(--mut);transition:color .3s;}
+input[type=text]{width:100%;padding:16px 18px 16px 52px;background:rgba(12,4,18,.85);border:1.5px solid var(--bdr2);border-radius:14px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:500;color:var(--text);outline:none;transition:all .3s;-webkit-text-fill-color:var(--text);}
+input[type=text]:focus{border-color:#e91e8c;background:rgba(233,30,140,.04);box-shadow:0 0 0 4px rgba(233,30,140,.12);}
+.input-wrapper:focus-within .input-prefix{color:#ff6ec7;}
+input::placeholder{color:var(--mut);}
+body.svc-disney input[type=text]:focus{border-color:var(--blue);background:rgba(26,111,255,.04);box-shadow:0 0 0 4px rgba(26,111,255,.12);}
+.field-hint{margin-top:6px;font-size:10px;color:var(--mut);font-weight:500;}
+
+/* BUTTON */
+.btn-submit{width:100%;padding:18px;border:none;border-radius:14px;font-family:'Outfit',sans-serif;font-size:16px;font-weight:800;cursor:pointer;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:9px;opacity:0;transform:translateY(12px);transition:opacity .5s,transform .5s,box-shadow .3s;color:#fff;letter-spacing:.4px;background:linear-gradient(135deg,#8b0050 0%,#e91e8c 50%,#ff2daa 100%);box-shadow:0 8px 34px rgba(233,30,140,.45),0 0 0 1px rgba(255,80,80,.1) inset;}
+.btn-submit.show{opacity:1;transform:translateY(0);}
+.btn-submit::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.12),transparent);opacity:0;transition:opacity .2s;}
+.btn-submit:hover::before{opacity:1;}
+.btn-submit:hover{transform:translateY(-2px);box-shadow:0 14px 44px rgba(233,30,140,.6);}
+.btn-submit:active{transform:scale(.99);}
+.btn-submit::after{content:'';position:absolute;top:0;left:-100%;width:55%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent);transition:left .65s;}
+.btn-submit:hover::after{left:160%;}
+body.svc-disney .btn-submit{background:linear-gradient(135deg,#0a2080 0%,#1a50ff 50%,#60aaff 100%);box-shadow:0 8px 34px rgba(26,111,255,.45),0 0 0 1px rgba(90,160,255,.1) inset;}
+body.svc-disney .btn-submit:hover{box-shadow:0 14px 44px rgba(26,111,255,.58);}
+.btn-arrow{font-size:20px;transition:transform .3s;}
+.btn-submit:hover .btn-arrow{transform:translateX(6px);}
+.btn-loader{display:none;width:22px;height:22px;border:2.5px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
+.btn-submit.loading .btn-content{display:none;}
+.btn-submit.loading .btn-loader{display:block;}
+
+/* ERROR */
+.error-box{display:none;margin-top:12px;padding:14px 16px;background:rgba(233,30,140,.08);border:1px solid rgba(233,30,140,.28);border-radius:12px;font-size:13px;font-weight:600;color:#ff6ec7;text-align:center;animation:sx .4s ease;line-height:1.55;}
+@keyframes sx{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* RESULTADO */
+.result-wrap{display:none;flex-direction:column;align-items:center;text-align:center;padding:10px 0;animation:su .7s cubic-bezier(.22,1,.36,1) both;}
+.result-icon{font-size:56px;margin-bottom:14px;animation:iconPop .5s cubic-bezier(.34,1.56,.64,1) both;}
+@keyframes iconPop{from{opacity:0;transform:scale(0) rotate(-20deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+.result-title{font-family:'Cinzel',serif;font-size:24px;font-weight:700;letter-spacing:2px;margin-bottom:6px;background:linear-gradient(135deg,#fff 0%,#ff90d8 50%,#e91e8c 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.result-sub{font-size:13px;color:var(--t2);font-weight:500;margin-bottom:22px;max-width:320px;line-height:1.65;}
+.link-box,.codigo4-box,.codigo6-box{width:100%;border-radius:18px;padding:22px;margin-bottom:16px;}
+.link-box,.codigo4-box{background:rgba(233,30,140,.07);border:1.5px solid rgba(233,30,140,.25);box-shadow:0 8px 36px rgba(233,30,140,.1);}
+.codigo6-box{background:rgba(26,111,255,.07);border:1.5px solid rgba(26,111,255,.25);box-shadow:0 8px 36px rgba(26,111,255,.1);}
+.box-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:14px;display:flex;align-items:center;gap:6px;}
+.link-box .box-label,.codigo4-box .box-label{color:#ff6ec7;}
+.codigo6-box .box-label{color:var(--blue2);}
+.link-text{background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px 14px;font-size:11px;color:var(--t2);word-break:break-all;line-height:1.55;margin-bottom:14px;max-height:80px;overflow:hidden;text-align:left;}
+.btn-abrir{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:15px;background:linear-gradient(135deg,#8b0050,#e91e8c);border:none;border-radius:12px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:800;color:#fff;cursor:pointer;text-decoration:none;transition:all .3s;box-shadow:0 6px 26px rgba(233,30,140,.4);}
+.btn-abrir:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(233,30,140,.6);}
+.codigo-num{font-family:'Outfit',sans-serif;font-weight:900;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:20px 16px;margin-bottom:12px;}
+.codigo4-num{font-size:56px;letter-spacing:12px;color:#ff6ec7;text-shadow:0 0 40px rgba(233,30,140,.7);}
+.codigo6-num{font-size:48px;letter-spacing:8px;color:var(--blue2);text-shadow:0 0 40px rgba(26,111,255,.7);}
+.codigo-expira{font-size:11px;color:var(--mut);}
+.expira-badge{display:inline-flex;align-items:center;gap:6px;padding:8px 20px;background:rgba(245,194,24,.07);border:1px solid rgba(245,194,24,.22);border-radius:30px;margin-bottom:20px;font-size:12px;font-weight:600;color:#f5c218;}
+.btn-reset{padding:12px 30px;background:rgba(233,30,140,.08);border:1px solid var(--bdr2);border-radius:30px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;color:var(--t2);cursor:pointer;transition:all .3s;}
+.btn-reset:hover{background:rgba(233,30,140,.15);color:var(--text);transform:translateY(-1px);}
+
+/* FOOTER */
+.card-foot{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:28px;padding-top:22px;border-top:1px solid var(--bdr);flex-wrap:wrap;}
+.flink{display:flex;align-items:center;gap:6px;padding:9px 20px;background:rgba(233,30,140,.06);border:1px solid var(--bdr2);border-radius:30px;font-size:12px;font-weight:600;color:var(--t2);text-decoration:none;transition:all .3s;backdrop-filter:blur(10px);}
+.flink:hover{background:rgba(233,30,140,.14);border-color:rgba(233,30,140,.5);color:var(--text);transform:translateY(-2px);}
+.copy{margin-top:16px;font-size:11px;color:var(--mut);text-align:center;}
+.copy b{color:rgba(233,30,140,.7);font-weight:700;}
+
+@keyframes su{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:560px){
+  .card{padding:24px 18px;}
+  .services-grid,.subtype-grid{gap:10px;}
+  .codigo4-num{font-size:44px;letter-spacing:8px;}
+  .codigo6-num{font-size:38px;letter-spacing:6px;}
+  .banner-img{max-height:200px;}
+}
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+<div class="neb nb1"></div>
+<div class="neb nb2"></div>
+<div class="neb nb3"></div>
+
+<!-- BANNER -->
+<div class="banner-wrap">
+  <img class="banner-img" src="image.png" alt="Itachi">
+  <div id="embers"></div>
+</div>
+
+<div class="wrapper">
+
+  <div class="pills">
+    <div class="pill"><span class="pill-dot"></span> En línea ahora</div>
+    <div class="pill">⚡ Entrega rápida</div>
+    <div class="pill">🔒 100% seguro</div>
+  </div>
+
+  <!-- STEPS -->
+  <div class="steps-wrap">
+    <div class="step-item">
+      <div class="step-num active" id="sn1">1</div>
+      <div class="step-label active" id="sl1">Servicio</div>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step-item">
+      <div class="step-num" id="sn2">2</div>
+      <div class="step-label" id="sl2">Tu correo</div>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step-item">
+      <div class="step-num" id="sn3">3</div>
+      <div class="step-label" id="sl3">¡Listo!</div>
+    </div>
+  </div>
+
+  <div class="card-wrap">
+    <canvas id="border-cvs"></canvas>
+    <div class="card">
+      <div class="cig"></div>
+      <div class="cc tl"></div>
+      <div class="cc tr"></div>
+
+      <!-- FORMULARIO -->
+      <div id="formState">
+        <div class="section-title">
+          <div class="section-icon">📺</div>
+          <div class="section-text">
+            <h3>¿Qué servicio tienes?</h3>
+            <p>Selecciona tu plataforma de streaming</p>
+          </div>
+        </div>
+
+        <div class="services-grid">
+          <div class="service-card netflix-card" id="cardNetflix" onclick="selectService('netflix')">
+            <div class="tag-popular">⭐ Popular</div>
+            <div class="service-badge">✓</div>
+            <div class="service-logo netflix-logo">
+              <svg width="32" height="36" viewBox="0 0 36 40"><path d="M2 2L2 38L12 31L12 20L24 38L34 38L34 2L24 2L24 20L12 2Z" fill="white"/></svg>
+            </div>
+            <div class="service-info"><h4>Netflix</h4><p>Elige tu código</p></div>
+          </div>
+          <div class="service-card disney-card" id="cardDisney" onclick="selectService('disney')">
+            <div class="service-badge">✓</div>
+            <div class="service-logo disney-logo">
+              <svg width="40" height="36" viewBox="0 0 44 40" fill="none">
+                <rect x="19" y="23" width="6" height="15" rx="2" fill="white" opacity=".95"/>
+                <rect x="9" y="27" width="10" height="11" rx="2" fill="white" opacity=".85"/>
+                <rect x="25" y="27" width="10" height="11" rx="2" fill="white" opacity=".85"/>
+                <polygon points="22,12 19,23 25,23" fill="white"/>
+                <polygon points="14,18 11,27 17,27" fill="white" opacity=".9"/>
+                <polygon points="30,18 27,27 33,27" fill="white" opacity=".9"/>
+                <circle cx="22" cy="10" r="3.5" fill="#f5c218"/>
+                <circle cx="22" cy="10" r="1.5" fill="white"/>
+              </svg>
+            </div>
+            <div class="service-info"><h4>Disney+</h4><p>Código de acceso</p></div>
+          </div>
+        </div>
+
+        <!-- Netflix subtipo -->
+        <div class="netflix-subtype" id="netflixSubtype">
+          <div class="subtype-label">🎬 ¿Qué código necesitas?</div>
+          <div class="subtype-grid subtype-grid-3">
+            <div class="subtype-btn" id="btnHogar" onclick="selectNetflixType('netflix_hogar')">
+              <span class="subtype-icon">🏠</span>
+              <div class="subtype-name">Código Hogar</div>
+              <div class="subtype-desc">Actualizar ubicación</div>
+            </div>
+            <div class="subtype-btn" id="btnLogin" onclick="selectNetflixType('netflix_login')">
+              <span class="subtype-icon">🔑</span>
+              <div class="subtype-name">Inicio de Sesión</div>
+              <div class="subtype-desc">Código de 4 dígitos</div>
+            </div>
+            <div class="subtype-btn" id="btnPass" onclick="selectNetflixType('netflix_pass')">
+              <span class="subtype-icon">🔐</span>
+              <div class="subtype-name">Cambiar Contraseña</div>
+              <div class="subtype-desc">Código de 6 dígitos</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Divider -->
+        <div class="fancy-divider" id="divider">
+          <div class="divider-line"></div>
+          <div class="divider-chip">✉ Ingresa tu correo de cuenta</div>
+          <div class="divider-line"></div>
+        </div>
+
+        <!-- Campo correo — el único campo -->
+        <div class="form-field" id="fieldEmail">
+          <div class="field-label">📧 Tu correo de cuenta</div>
+          <div class="input-wrapper">
+            <span class="input-prefix">✉</span>
+            <input type="text" id="emailInput"
+              placeholder="tucorreo@sharebot.net"
+              autocomplete="off"
+              autocapitalize="none"
+              spellcheck="false">
+          </div>
+          <div class="field-hint">💡 Escribe el correo que te proporcionamos</div>
+        </div>
+
+        <button class="btn-submit" id="btnSubmit" onclick="handleSubmit()">
+          <div class="btn-content"><span>Ver mi código</span><span class="btn-arrow">→</span></div>
+          <div class="btn-loader"></div>
+        </button>
+
+        <div class="error-box" id="errorBox"></div>
+
+        <div class="card-foot">
+          <a class="flink" id="waLink" href="#" target="_blank">🔵 Whatsapp</a>
+          <a class="flink" id="waLink" href="#" target="_blank">🔵 Telegram</a>
+        </div>
+        <div class="copy">© 2026 <b>https://wa.me/51986165524</b> — Todos los derechos reservados</div>
+      </div>
+
+      <!-- RESULTADO -->
+      <div class="result-wrap" id="resultState">
+        <div class="result-icon" id="resultIcon">🔥</div>
+        <div class="result-title" id="resultTitle">¡Aquí está!</div>
+        <div class="result-sub" id="resultSub"></div>
+
+        <div class="link-box" id="boxNetflixHogar" style="display:none">
+          <div class="box-label">🏠 Tu link de actualización de Hogar</div>
+          <div class="link-text" id="netflixLink"></div>
+          <a class="btn-abrir" id="netflixBtn" href="#" target="_blank">🎬 Abrir y actualizar hogar</a>
+        </div>
+
+        <div class="codigo4-box" id="boxNetflixLogin" style="display:none">
+          <div class="box-label">🔑 Código de inicio de sesión Netflix</div>
+          <div class="codigo-num codigo4-num" id="netflixCode4"></div>
+          <div class="codigo-expira">⏱️ Este código expira pronto</div>
+        </div>
+
+        <div class="codigo6-box" id="boxDisney" style="display:none">
+          <div class="box-label">🏰 Código de acceso Disney+</div>
+          <div class="codigo-num codigo6-num" id="disneyCode6"></div>
+          <div class="codigo-expira">⏱️ Este código expira en 15 minutos</div>
+        </div>
+
+        <div class="link-box" id="boxNetflixPass" style="display:none">
+          <div class="box-label">🔐 Tu link para restablecer contraseña</div>
+          <div class="link-text" id="netflixPassLink"></div>
+          <a class="btn-abrir" id="netflixPassBtn" href="#" target="_blank">🔐 Abrir y restablecer contraseña</a>
+        </div>
+
+        <div class="expira-badge" style="margin-top:16px">⚠️ Úsalo antes de que expire</div>
+        <button class="btn-reset" onclick="resetForm()">← Consultar de nuevo</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+/* ════════════════════════════
+   CONFIGURACIÓN
+════════════════════════════ */
+const API_URL = 'https://TU-PROYECTO.up.railway.app'; // ← Pon aquí tu URL de Railway
+
+document.getElementById('waLink').href   = 'https://t.me/ItachiPeru';
+document.getElementById('waLink').href = 'https://wa.me/51986165524';
+
+/* ════════════════════════════
+   BG CANVAS
+════════════════════════════ */
+(function(){
+  const c=document.getElementById('bg-canvas'),ctx=c.getContext('2d');
+  let W,H,P=[];
+  function rsz(){W=c.width=innerWidth;H=c.height=innerHeight;}
+  function mk(){return{x:Math.random()*W,y:H+20,r:Math.random()*2+.5,vy:-(Math.random()*1.5+.5),vx:(Math.random()-.5)*.8,l:0,ml:Math.random()*120+80,h:Math.random()*30};}
+  function init(){rsz();for(let i=0;i<60;i++){const p=mk();p.y=Math.random()*H;p.l=Math.random()*p.ml;P.push(p);}setInterval(()=>{if(P.length<80)P.push(mk());},100);}
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    const vg=ctx.createRadialGradient(W/2,H/2,H*.2,W/2,H/2,H*.85);
+    vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.65)');
+    ctx.fillStyle=vg;ctx.fillRect(0,0,W,H);
+    P.forEach((p,i)=>{
+      p.x+=p.vx;p.y+=p.vy;p.l++;
+      if(p.l>p.ml||p.y<-20){P[i]=mk();return;}
+      const t=p.l/p.ml,a=t<.15?t/.15:(t>.7?(1-(t-.7)/.3):.9);
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=`hsla(${p.h},100%,60%,${a*.7})`;ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize',rsz);init();draw();
+})();
+
+(function(){
+  const c=document.getElementById('embers');
+  function spawn(){
+    const e=document.createElement('div');e.className='ember';
+    const sz=Math.random()*4+1.5,dur=Math.random()*3+2;
+    e.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;bottom:${Math.random()*50}px;animation-duration:${dur}s;animation-delay:${Math.random()*2}s;`;
+    c.appendChild(e);setTimeout(()=>e.remove(),(dur+2)*1000);
+  }
+  setInterval(spawn,350);
+})();
+
+(function(){
+  const bc=document.getElementById('border-cvs'),bx=bc.getContext('2d');
+  let ang=0;
+  function rsz(){const w=document.querySelector('.card-wrap');if(!w)return;bc.width=w.offsetWidth+4;bc.height=w.offsetHeight+4;}
+  function gc(){return document.body.className.includes('disney')?[[26,111,255],[90,170,255]]:[[204,24,24],[255,80,80]];}
+  function draw(){
+    bx.clearRect(0,0,bc.width,bc.height);
+    const w=bc.width,h=bc.height,r=26;
+    ang=(ang+1.5)%360;
+    const rad=ang*Math.PI/180,cx=w/2,cy=h/2,len=Math.sqrt(w*w+h*h)/2+10;
+    const[c1,c2]=gc();
+    const g=bx.createLinearGradient(cx-Math.cos(rad)*len,cy-Math.sin(rad)*len,cx+Math.cos(rad)*len,cy+Math.sin(rad)*len);
+    g.addColorStop(0,`rgba(${c1},0)`);g.addColorStop(.3,`rgba(${c1},0)`);
+    g.addColorStop(.42,`rgba(${c1},.85)`);g.addColorStop(.48,`rgba(${c2},.98)`);
+    g.addColorStop(.55,`rgba(${c1},.85)`);g.addColorStop(.67,`rgba(${c1},0)`);g.addColorStop(1,`rgba(${c1},0)`);
+    bx.beginPath();bx.moveTo(r,0);bx.lineTo(w-r,0);bx.arcTo(w,0,w,r,r);
+    bx.lineTo(w,h-r);bx.arcTo(w,h,w-r,h,r);
+    bx.lineTo(r,h);bx.arcTo(0,h,0,h-r,r);
+    bx.lineTo(0,r);bx.arcTo(0,0,r,0,r);bx.closePath();
+    bx.strokeStyle=g;bx.lineWidth=2.5;bx.stroke();
+    requestAnimationFrame(draw);
+  }
+  const ro=new ResizeObserver(()=>rsz());
+  const el=document.querySelector('.card-wrap');if(el)ro.observe(el);
+  window.addEventListener('resize',()=>setTimeout(rsz,100));
+  setTimeout(()=>{rsz();draw();},200);
+})();
+
+/* ════════════════════════════
+   LÓGICA APP
+════════════════════════════ */
+const $=id=>document.getElementById(id);
+let currentService=null;
+
+function setStep(n){
+  for(let i=1;i<=3;i++){
+    const num=$('sn'+i),lbl=$('sl'+i);
+    if(i<n){num.className='step-num done';num.textContent='✓';lbl.className='step-label';}
+    else if(i===n){num.className='step-num active';num.textContent=i;lbl.className='step-label active';}
+    else{num.className='step-num';num.textContent=i;lbl.className='step-label';}
+  }
+}
+
+function selectService(svc){
+  document.body.className='svc-'+svc;
+  $('cardNetflix').className='service-card netflix-card'+(svc==='netflix'?' selected':'');
+  $('cardDisney').className ='service-card disney-card' +(svc==='disney' ?' selected':'');
+  hideError();
+  if(svc==='netflix'){
+    $('netflixSubtype').classList.add('show');
+    ['divider','fieldEmail','btnSubmit'].forEach(id=>$(id).classList.remove('show'));
+    currentService=null;
+  } else {
+    $('netflixSubtype').classList.remove('show');
+    $('btnHogar').className='subtype-btn';
+    $('btnLogin').className='subtype-btn';
+    currentService='disney';
+    showFormFields();
+  }
+  setStep(2);
+}
+
+function selectNetflixType(tipo){
+  currentService=tipo;
+  $('btnHogar').className='subtype-btn'+(tipo==='netflix_hogar'?' selected':'');
+  $('btnLogin').className='subtype-btn'+(tipo==='netflix_login'?' selected':'');
+  $('btnPass').className='subtype-btn'+(tipo==='netflix_pass'?' selected':'');
+  hideError();
+  showFormFields();
+}
+
+function showFormFields(){
+  setTimeout(()=>{
+    $('divider').classList.add('show');
+    $('fieldEmail').classList.add('show');
+    $('btnSubmit').classList.add('show');
+  },80);
+  setTimeout(()=>$('emailInput').focus(),350);
+}
+
+async function handleSubmit(){
+  const correo=$('emailInput').value.trim().toLowerCase();
+
+  if(!currentService){showError('👆 Elige el tipo de código primero.');return;}
+  if(!correo){showError('📧 Ingresa tu correo de cuenta.');$('emailInput').focus();return;}
+  if(!correo.includes('@')){showError('📧 Ingresa un correo válido.');$('emailInput').focus();return;}
+
+  hideError();
+  const btn=$('btnSubmit');
+  btn.classList.add('loading');
+  btn.disabled=true;
+
+  try{
+    const url=`${API_URL}?servicio=${encodeURIComponent(currentService)}&correo=${encodeURIComponent(correo)}`;
+    const res=await fetch(url);
+    const data=await res.json();
+
+    if(res.ok && data.success && data.valor){
+      showResult(data);
+    } else {
+      showError('❌ '+(data.error||'Error desconocido. Intenta de nuevo.'));
+    }
+  } catch(e){
+    showError('❌ Error de conexión. Verifica tu internet e intenta de nuevo.');
+  } finally{
+    btn.classList.remove('loading');
+    btn.disabled=false;
+  }
+}
+
+function showResult(data){
+  $('formState').style.display='none';
+  $('resultState').style.display='flex';
+  ['sn2','sn3'].forEach(id=>{const e=$(id);e.className='step-num done';e.textContent='✓';});
+  $('sl3').className='step-label active';
+  ['boxNetflixHogar','boxNetflixLogin','boxDisney','boxNetflixPass'].forEach(id=>$(id).style.display='none');
+
+  if(currentService==='netflix_hogar'){
+    $('resultIcon').textContent='🏠';
+    $('resultTitle').textContent='¡Tu link está listo!';
+    $('resultSub').textContent='Abre el link y confirma que eres tú para actualizar el hogar de Netflix.';
+    $('boxNetflixHogar').style.display='block';
+    $('netflixLink').textContent=data.valor;
+    $('netflixBtn').href=data.valor;
+  } else if(currentService==='netflix_login'){
+    $('resultIcon').textContent='🔑';
+    $('resultTitle').textContent='¡Tu código está listo!';
+    $('resultSub').textContent='Ingresa este código en Netflix para iniciar sesión.';
+    $('boxNetflixLogin').style.display='block';
+    $('netflixCode4').textContent=data.valor;
+  } else if(currentService==='netflix_pass'){
+    $('resultIcon').textContent='🔐';
+    $('resultTitle').textContent='¡Tu link está listo!';
+    $('resultSub').textContent='Abre el link para restablecer la contraseña de Netflix. Expira pronto.';
+    $('boxNetflixPass').style.display='block';
+    $('netflixPassLink').textContent=data.valor;
+    $('netflixPassBtn').href=data.valor;
+  } else if(currentService==='disney'){
+    $('resultIcon').textContent='🏰';
+    $('resultTitle').textContent='¡Tu código está listo!';
+    $('resultSub').textContent='Ingresa este código en Disney+ para verificar tu acceso.';
+    $('boxDisney').style.display='block';
+    $('disneyCode6').textContent=data.valor;
+  }
+}
+
+function showError(msg){
+  const b=$('errorBox');
+  b.innerHTML=msg.replace(/\n/g,'<br>');
+  b.style.display='block';
+  setTimeout(()=>b.style.display='none',8000);
+}
+function hideError(){ $('errorBox').style.display='none'; }
+
+function resetForm(){
+  currentService=null;
+  document.body.className='';
+  $('emailInput').value='';
+  $('formState').style.display='block';
+  $('resultState').style.display='none';
+  $('cardNetflix').className='service-card netflix-card';
+  $('cardDisney').className ='service-card disney-card';
+  $('btnHogar').className='subtype-btn';
+  $('btnLogin').className='subtype-btn';
+  $('btnPass').className='subtype-btn';
+  $('netflixSubtype').classList.remove('show');
+  ['divider','fieldEmail','btnSubmit'].forEach(id=>$(id).classList.remove('show'));
+  hideError();
+  setStep(1);
+}
+
+$('emailInput').addEventListener('keydown',e=>{if(e.key==='Enter')handleSubmit();});
+$('emailInput').addEventListener('input',()=>hideError());
+</script>
+</body>
+</html>
