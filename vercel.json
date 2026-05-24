@@ -1,11 +1,3 @@
 {
-  "version": 2,
-  "buildCommand": null,
-  "outputDirectory": null,
-  "framework": null,
-  "functions": {
-    "api/codigo.js": {
-      "maxDuration": 30
-    }
-  }
+  "version": 2
 }
